@@ -1,0 +1,17 @@
+{
+  "name": "Siddhant Budhia",
+  "designation": "Engineering Undergraduate at Plaksha University",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/OrbitBoom" },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/siddhant-budhia-369417318/"
+    }
+  ],
+  "achievements": [
+    ["ICode Global Hackathon 2025", "Rank 28, Python Advance"],
+    ["ICode 2023", "Rank 88, Advanced Python"],
+    ["Neev Hacks", "Second place"],
+    ["Trackshift 2026", "Top 10"]
+  ]
+}

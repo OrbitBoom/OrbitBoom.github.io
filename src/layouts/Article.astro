@@ -1,0 +1,58 @@
+---
+import { render } from "astro:content";
+import Site from "./Site.astro";
+import Road from "../components/Road.astro";
+import type { Entry } from "../lib/writing";
+interface Props {
+  entry: Entry;
+}
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+const section = entry.collection === "research" ? "Research" : "Projects";
+---
+
+<Site title={data.title} description={data.summary} noindex={data.draft}>
+  <article class="article">
+    <header class="article-head">
+      <a class="back" href={"/" + entry.collection + "/"}>
+        {section}
+      </a>
+      <p class="micro entry-kind">{data.kind}</p>
+      <h1>{data.title}</h1>
+      <p class="standfirst">{data.summary}</p>
+    </header>
+    <div class="article-body">
+      <aside>
+        {data.topics.length > 0 && (
+          <>
+            <h2 class="micro">
+              {section === "Research" ? "Methods" : "Built with"}
+            </h2>
+            <ul>
+              {data.topics.map((t) => (
+                <li>{t}</li>
+              ))}
+            </ul>
+          </>
+        )}
+        {data.repository && (
+          <a class="text-link" href={data.repository}>
+            Source on GitHub
+          </a>
+        )}
+      </aside>
+      <div class="prose">
+        <Content />
+        {data.cover === "road" && (
+          <figure class="detail-road">
+            <Road />
+            <figcaption>
+              Road elevation with an exaggerated vertical scale.
+            </figcaption>
+          </figure>
+        )}
+      </div>
+    </div>
+  </article>
+</Site>

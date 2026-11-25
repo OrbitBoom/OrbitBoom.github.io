@@ -1,0 +1,78 @@
+---
+import Road from "./Road.astro";
+interface Props {
+  kind?: string;
+}
+const { kind } = Astro.props;
+const angles = [-32, 0, 32];
+---
+
+{kind && (
+  <div class:list={["cover", "cover-" + kind]} aria-hidden="true">
+    {kind === "words" && (
+      <div class="vocab">
+        <i lang="hi">शब्द</i>
+        <span class="vocab-rule"></span>
+        <span>word</span>
+      </div>
+    )}
+    {kind === "flight" && (
+      <svg viewBox="0 0 360 170" preserveAspectRatio="xMidYMid meet">
+        <g stroke="#aebec0" fill="none" opacity=".65">
+          <path d="m40 138 185 0 96-48-184 0z M132 138l95-48 M79 118h184 M102 107h184" />
+          <path d="M177 138v-22l96-48v22m-96 26 96-48" stroke-dasharray="2 3" />
+        </g>
+        <g fill="none" stroke-width="1.6">
+          <path d="M65 129Q139 -49 271 103" stroke="#fdc38a" />
+          <path d="M65 129Q153 2 271 103" stroke="#d4d9bd" />
+          <path
+            d="M65 129Q164 45 271 103"
+            stroke="#9ab4ac"
+            stroke-dasharray="4 3"
+          />
+        </g>
+        <circle cx="65" cy="129" r="3" fill="#f2c48d" />
+      </svg>
+    )}
+    {kind === "bottle" && (
+      <svg viewBox="0 0 360 170">
+        {angles.map((a, i) => (
+          <g
+            transform={
+              "translate(" +
+              (86 + i * 94) +
+              " " +
+              (i === 1 ? 74 : 91) +
+              ") rotate(" +
+              a +
+              ")"
+            }
+            fill="none"
+            stroke="#515f5b"
+            stroke-width="1.45"
+          >
+            <path
+              d="M-8-39v9q0 4-7 10-5 4-5 11v37q0 7 6 7h28q6 0 6-7V-9q0-7-5-11-7-6-7-10v-9z"
+              fill="#e5e7dc"
+            />
+            <path
+              d="M-19 7q10-4 19 0t19 0v21q0 6-5 6h-28q-5 0-5-6z"
+              fill="#94afa8"
+            />
+            <path d="M-9-39h18v-6H-9zm-9 31h36m-36 3h36" />
+            <path d="M-15 15v9" stroke="#f2f4eb" />
+          </g>
+        ))}
+      </svg>
+    )}
+    {kind === "road" && <Road />}
+    {kind === "market" && (
+      <div class="years">
+        <span>2020</span>
+        <i></i>
+        <span>2024</span>
+      </div>
+    )}
+    {kind === "python" && <div class="python-art">.py</div>}
+  </div>
+)}

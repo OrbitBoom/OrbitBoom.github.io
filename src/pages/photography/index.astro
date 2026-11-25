@@ -1,0 +1,20 @@
+---
+import copy from "../../content/personal/sections.json";
+import Site from "../../layouts/Site.astro";
+import Gallery from "../../components/Gallery.astro";
+import { gallery } from "../../lib/gallery";
+const albums = await gallery(import.meta.env.DEV);
+---
+
+<Site
+  title="Photography"
+  description="Photographs by Siddhant Budhia."
+  noindex={!albums.length}
+  dark
+>
+  <header class="page-head">
+    <h1>Photography</h1>
+    {!albums.length && <p>{copy.photographyEmpty}</p>}
+  </header>
+  {albums.length > 0 && <Gallery {albums} />}
+</Site>

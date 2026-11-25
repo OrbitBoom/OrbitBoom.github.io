@@ -1,0 +1,12 @@
+---
+import Article from "../../layouts/Article.astro";
+import { entries } from "../../lib/writing";
+export async function getStaticPaths() {
+  return (await entries("research")).map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+---
+
+<Article entry={Astro.props.entry} />

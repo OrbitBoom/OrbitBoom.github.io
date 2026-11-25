@@ -1,0 +1,37 @@
+---
+import Site from "../layouts/Site.astro";
+import { Content } from "../content/personal/about.md";
+import profile from "../content/personal/profile.json";
+---
+
+<Site
+  title="About"
+  description={
+    profile.name +
+    " on engineering, tennis, photography and the things he makes."
+  }
+>
+  <header class="page-head">
+    <h1>About</h1>
+  </header>
+  <div class="about-grid">
+    <aside>
+      <h2>{profile.name}</h2>
+      <p>{profile.designation}</p>
+    </aside>
+    <div class="prose">
+      <Content />
+      <section class="achievements">
+        <h2>Selected achievements</h2>
+        <dl>
+          {profile.achievements.map(([event, result]) => (
+            <div>
+              <dt>{event}</dt>
+              <dd>{result}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    </div>
+  </div>
+</Site>

@@ -1,0 +1,91 @@
+---
+import Site from "../layouts/Site.astro";
+import profile from "../content/personal/profile.json";
+import { Content as Intro } from "../content/personal/home.md";
+import { entries, entryUrl } from "../lib/writing";
+import { gallery, photoUrl, sources } from "../lib/gallery";
+import Road from "../components/Road.astro";
+import Cover from "../components/Cover.astro";
+const work = [...(await entries("projects")), ...(await entries("research"))];
+const featured = work
+  .filter((e) => e.data.featured !== undefined)
+  .sort((a, b) => a.data.featured! - b.data.featured!);
+const road = work.find(
+  (e) => e.collection === "research" && e.id === "calcroad",
+);
+const preview = (await gallery(false)).flatMap((a) => a.photos).slice(0, 3);
+---
+
+<Site>
+  <section class="hero">
+    <div class="identity">
+      <h1>{profile.name}</h1>
+      <p class="designation">{profile.designation}</p>
+      <div class="intro">
+        <Intro />
+      </div>
+    </div>
+    {road && (
+      <a
+        class="plate"
+        href={entryUrl(road)}
+        aria-label="Read CalcRoad, the road elevation study"
+      >
+        <figure>
+          <div class="plot-paper">
+            <span class="plot-tag">Elevation surface</span>
+            <Road />
+            <span class="plot-unit">40 m × 7 m</span>
+          </div>
+          <figcaption>
+            <strong>{road.data.title}</strong>
+            <span>Road elevation model</span>
+          </figcaption>
+        </figure>
+      </a>
+    )}
+  </section>
+  {featured.length > 0 && (
+    <section class="selected">
+      <div class="section-heading">
+        <h2>Selected work</h2>
+      </div>
+      <div class="selections">
+        {featured.map((e) => (
+          <a class="selection" href={entryUrl(e)}>
+            <Cover kind={e.data.cover} />
+            <span class="micro entry-kind">
+              {e.collection === "projects" ? "Software" : "Investigation"}
+            </span>
+            <h3>{e.data.shortTitle ?? e.data.title}</h3>
+            <p>{e.data.summary}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+  {preview.length > 0 && (
+    <section class="selected">
+      <div class="section-heading">
+        <h2>
+          <a href="/photography/">Photography</a>
+        </h2>
+      </div>
+      <div class="photo-preview">
+        {preview.map((p) => (
+          <a href="/photography/">
+            <img
+              src={photoUrl(p, p.widths[0])}
+              srcset={sources(p)}
+              sizes="(max-width: 700px) 90vw, 32vw"
+              width={p.width}
+              height={p.height}
+              alt={p.alt}
+              loading="lazy"
+            />
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</Site>
