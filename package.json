@@ -1,0 +1,28 @@
+{
+  "name": "siddhant-budhia-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "photo": "node scripts/prepare-photo.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.6",
+    "@fontsource/baskervville": "^5.3.0",
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/noto-serif-devanagari": "^5.3.0",
+    "astro": "^7.4.13",
+    "gray-matter": "^4.0.3",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

@@ -1,0 +1,94 @@
+---
+import "@fontsource/baskervville/latin-400.css";
+import "@fontsource/noto-serif-devanagari/devanagari-400.css";
+
+import "@fontsource/baskervville/latin-400-italic.css";
+import "@fontsource/dm-sans/latin-400.css";
+import "@fontsource/dm-sans/latin-500.css";
+import "../styles/site.css";
+import profile from "../content/personal/profile.json";
+import { gallery } from "../lib/gallery";
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  dark?: boolean;
+}
+const {
+  title,
+  description = profile.designation +
+    ". Selected software projects, mathematical investigations and personal notes.",
+  noindex,
+  dark,
+} = Astro.props;
+const pageTitle = title ? title + " · " + profile.name : profile.name;
+const url = new URL(Astro.url.pathname, Astro.site);
+const nav = [
+  ["Home", "/"],
+  ["Projects", "/projects/"],
+  ["Research", "/research/"],
+];
+if ((await gallery(false)).length) nav.push(["Photography", "/photography/"]);
+nav.push(["About", "/about/"]);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={url} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={new URL("/social.png", Astro.site)} />
+    <meta
+      property="og:image:alt"
+      content={profile.name + " — personal website"}
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    {noindex && <meta name="robots" content="noindex,follow" />}
+  </head>
+  <body class:list={[{ dark }]}>
+    <a class="skip" href="#main">
+      Skip to content
+    </a>
+    <header class="mast wrap">
+      <a class="brand" href="/" aria-label={profile.name + ", home"}>
+        <span class="monogram" aria-hidden="true">
+          sb<span>.</span>
+        </span>
+      </a>
+      <nav aria-label="Main navigation">
+        {nav.map(([label, href]) => {
+          const current = Astro.url.pathname === href;
+          const active =
+            current || (href !== "/" && Astro.url.pathname.startsWith(href));
+          return (
+            <a
+              href={href}
+              aria-current={current ? "page" : active ? "location" : undefined}
+            >
+              {label}
+            </a>
+          );
+        })}
+      </nav>
+    </header>
+    <main id="main" tabindex="-1" class="wrap">
+      <slot />
+    </main>
+    <footer class="wrap">
+      <span>{profile.name}</span>
+      <div>
+        {profile.links.map((link) => (
+          <a href={link.url}>{link.label}</a>
+        ))}
+      </div>
+    </footer>
+  </body>
+</html>

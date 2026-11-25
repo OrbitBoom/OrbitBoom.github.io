@@ -1,0 +1,139 @@
+---
+import { photoUrl, sources, type Album } from "../lib/gallery";
+interface Props {
+  albums: Album[];
+}
+const { albums } = Astro.props;
+---
+
+<div class="gallery">
+  {albums.map((album) => (
+    <section id={album.slug} class="album">
+      {album.title && <h2>{album.title}</h2>}
+      {album.introduction && <p>{album.introduction}</p>}
+      <div class="frames">
+        {album.photos.map((p, i) => (
+          <figure>
+            <a
+              class="frame"
+              href={photoUrl(p, p.widths.at(-1)!)}
+              data-sources={sources(p)}
+              data-caption={[p.title, p.caption, p.location, p.camera]
+                .filter(Boolean)
+                .join(" · ")}
+            >
+              <img
+                src={photoUrl(p, p.widths[0])}
+                srcset={sources(p)}
+                sizes="(max-width: 680px) 92vw, (max-width: 1240px) 44vw, 540px"
+                width={p.width}
+                height={p.height}
+                alt={p.alt}
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+            </a>
+            {(p.title || p.caption || p.location || p.camera) && (
+              <figcaption>
+                {p.title && <strong>{p.title}</strong>}
+                {[p.caption, p.location, p.camera].filter(Boolean).join(" · ")}
+              </figcaption>
+            )}
+          </figure>
+        ))}
+      </div>
+    </section>
+  ))}
+</div>
+<dialog class="viewer" aria-label="Photograph viewer">
+  <div class="viewer-nav">
+    <span class="counter" role="status"></span>
+    <button class="close" autofocus>
+      Close
+    </button>
+  </div>
+  <figure>
+    <img class="view-photo" alt="" />
+    <figcaption class="view-caption"></figcaption>
+  </figure>
+  <div class="viewer-controls">
+    <button class="previous">Previous</button>
+    <button class="next">Next</button>
+  </div>
+</dialog>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>(".viewer");
+  if (dialog) {
+    const image = dialog.querySelector<HTMLImageElement>(".view-photo")!;
+    const caption = dialog.querySelector<HTMLElement>(".view-caption")!;
+    const previous = dialog.querySelector<HTMLButtonElement>(".previous")!;
+    const next = dialog.querySelector<HTMLButtonElement>(".next")!;
+    let frames: HTMLAnchorElement[] = [];
+    let current = 0;
+    let opener: HTMLAnchorElement | null = null;
+    function show(index: number) {
+      current = (index + frames.length) % frames.length;
+      const frame = frames[current];
+      image.sizes = "100vw";
+      image.srcset = frame.dataset.sources || "";
+      image.src = frame.href;
+      image.alt = frame.querySelector("img")!.alt;
+      caption.textContent = frame.dataset.caption || "";
+      dialog!.querySelector(".counter")!.textContent =
+        current + 1 + " / " + frames.length;
+      previous.hidden = next.hidden = frames.length < 2;
+    }
+    document.querySelectorAll<HTMLAnchorElement>(".frame").forEach((frame) =>
+      frame.addEventListener("click", (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        e.preventDefault();
+        opener = frame;
+        frames = Array.from(
+          frame
+            .closest(".album")!
+            .querySelectorAll<HTMLAnchorElement>(".frame"),
+        );
+        show(frames.indexOf(frame));
+        dialog.showModal();
+        document.documentElement.classList.add("viewing");
+      }),
+    );
+    previous.onclick = () => show(current - 1);
+    next.onclick = () => show(current + 1);
+    dialog.querySelector<HTMLButtonElement>(".close")!.onclick = () =>
+      dialog.close();
+    dialog.addEventListener("close", () => {
+      document.documentElement.classList.remove("viewing");
+      opener?.focus({ preventScroll: true });
+    });
+    dialog.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        show(current + (e.key === "ArrowLeft" ? -1 : 1));
+      }
+    });
+    let start: Touch | undefined;
+    image.addEventListener(
+      "touchstart",
+      (e) => {
+        start = e.touches.length === 1 ? e.touches[0] : undefined;
+      },
+      { passive: true },
+    );
+    image.addEventListener("touchcancel", () => {
+      start = undefined;
+    });
+    image.addEventListener(
+      "touchend",
+      (e) => {
+        if (!start || e.touches.length) return;
+        const dx = e.changedTouches[0].clientX - start.clientX;
+        const dy = e.changedTouches[0].clientY - start.clientY;
+        if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5)
+          show(current + (dx < 0 ? 1 : -1));
+        start = undefined;
+      },
+      { passive: true },
+    );
+  }
+</script>

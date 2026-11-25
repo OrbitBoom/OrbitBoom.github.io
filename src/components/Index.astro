@@ -1,0 +1,31 @@
+---
+import Site from "../layouts/Site.astro";
+import Cover from "./Cover.astro";
+import { entries, entryUrl, type Section } from "../lib/writing";
+interface Props {
+  section: Section;
+  title: string;
+  description: string;
+}
+const { section, title, description } = Astro.props;
+const items = await entries(section);
+---
+
+<Site {title} {description}>
+  <header class="page-head">
+    <h1>{title}</h1>
+    <p>{description}</p>
+  </header>
+  <div class="index-list">
+    {items.map((e) => (
+      <a class="index-row" href={entryUrl(e)}>
+        <Cover kind={e.data.cover} />
+        <div>
+          <span class="micro entry-kind">{e.data.kind}</span>
+          <h2>{e.data.title}</h2>
+          <p>{e.data.summary}</p>
+        </div>
+      </a>
+    ))}
+  </div>
+</Site>
