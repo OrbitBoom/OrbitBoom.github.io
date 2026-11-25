@@ -80,7 +80,7 @@ At build time, Sharp creates sizes up to 2560 pixels wide without upscaling or c
 
 ## GitHub Pages
 
-The ready-to-install [Pages workflow](deployment/pages.yml) is included in this review branch. With workflow-write permission, move it to `.github/workflows/pages.yml` to activate pull request builds. Publication is a separate, manual action. When you approve a release:
+The workflow checks and builds pull requests to `main`. Publication is a separate, manual action. When you approve a release:
 
 1. Merge the reviewed changes into `main`.
 2. In **Settings → Pages → Build and deployment**, select **GitHub Actions**.
